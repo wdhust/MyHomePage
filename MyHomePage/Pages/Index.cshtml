@@ -1,0 +1,43 @@
+﻿@page "/"
+
+<h1>Hello, world!</h1>
+
+<p>Welcome to your new app.</p>
+
+<div>
+    <p>Jump to page: <NavLink href="/counter">Counter</NavLink> </p>
+    <p>Or jump to page: <NavLink href="/fetchdata">FetchData</NavLink> </p>
+</div>
+<div>
+    <input type="text" bind="@message"/>
+    <button onclick="@ShowMessage">Show message</button>
+</div>
+<div>
+    <input ref="inputTextFile" type="file" accept="text/plain" onchange="@ReadTextFromInputFile"/>
+    <p>TextContent: @textContent</p>
+</div>
+
+<SurveyPrompt Title="How is Blazor working for you?" />
+
+@functions
+{
+    string message = "";
+
+    async void ShowMessage()
+    {
+        //await WebFileUtil.ShowPrompt(message);
+        textContent = message;
+    }
+
+    ElementRef inputTextFile;
+    string textContent = "File not to be selected yet!";
+
+    async void ReadTextFromInputFile()
+    {
+        textContent = await WebFileUtil.ReadUploadedFileAsText(inputTextFile);
+        Console.WriteLine($"textContent: {textContent}");
+
+        StateHasChanged();
+    }
+}
+
