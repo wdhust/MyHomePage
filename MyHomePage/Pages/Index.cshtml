@@ -13,8 +13,13 @@
     <button onclick="@ShowMessage">Show message</button>
 </div>
 <div>
-    <input ref="inputTextFile" type="file" accept="text/plain" onchange="@ReadTextFromInputFile"/>
-    <p>TextContent: @textContent</p>
+    <br />
+    <input ref="inputElemRef" type="file" accept="text/plain" onchange="@ReadTextFromInputFile" /><br />
+    <p>TextContent: </p>
+    <p>@textContent</p><br />
+</div>
+<div>
+    <button disabled="@isDownloadButtonDisabled" onclick="@DownloadResultFile">Download result file</button>
 </div>
 
 <SurveyPrompt Title="How is Blazor working for you?" />
@@ -25,19 +30,29 @@
 
     async void ShowMessage()
     {
-        //await WebFileUtil.ShowPrompt(message);
-        textContent = message;
+        await WebFileUtil.ShowPrompt(message);
+        //textContent = message;
     }
 
-    ElementRef inputTextFile;
+    ElementRef inputElemRef;
     string textContent = "File not to be selected yet!";
 
     async void ReadTextFromInputFile()
     {
-        textContent = await WebFileUtil.ReadUploadedFileAsText(inputTextFile);
+        textContent = await WebFileUtil.ReadUploadedFileAsText(inputElemRef);
         Console.WriteLine($"textContent: {textContent}");
 
+        isDownloadButtonDisabled = false;
+
         StateHasChanged();
+    }
+
+    bool isDownloadButtonDisabled = true;
+
+    async void DownloadResultFile()
+    {
+        await WebFileUtil.WriteTextFileAndDownload("resultFile.txt",
+            $"Converted text content:{Environment.NewLine}{textContent}");
     }
 }
 

@@ -18,5 +18,10 @@ namespace MyHomePage
 		{
 			return JSRuntime.Current.InvokeAsync<string>("webFileUtil.readUploadedFileAsText", inputElemRef);
 		}
+
+		public static Task WriteTextFileAndDownload(string fileName, string textContent)
+		{
+			return JSRuntime.Current.InvokeAsync<object>("webFileUtil.writeTextFileAndDownload", fileName, textContent);
+		}
 	}
 }

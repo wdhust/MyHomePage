@@ -7,20 +7,25 @@
         //
         // Functions
         //
-        const getFileInfo = (inputFileElemId) => {
+        const getFileInfo = (inputFileElemId) =>
+        {
             const files = document.getElementById(inputFileElemId).files;
-            if (files.length <= 0) {
+            if (files.length <= 0)
+            {
                 return null;
             }
             return files[0];
         }
 
-        const writeTextFileAndDownload = (fileName, textContent) => {
+        const writeTextFileAndDownload = (fileName, textContent) =>
+        {
             const blob = new Blob([textContent], { type: 'text/csv' });
-            if (window.navigator.msSaveOrOpenBlob) {
+            if (window.navigator.msSaveOrOpenBlob)
+            {
                 window.navigator.msSaveBlob(blob, fileName);
             }
-            else {
+            else
+            {
                 const elem = document.createElement('a');
                 elem.href = window.URL.createObjectURL(blob);
                 elem.download = fileName;
@@ -30,10 +35,12 @@
             }
         }
 
-        const convertTextContent = (inputText) => {
+        const convertTextContent = (inputText) =>
+        {
             let outputText = "";
-            const repeatCount = 1000*1000*1;
-            for (let i = 0; i < repeatCount; i++) {
+            const repeatCount = 1000 * 1000 * 1;
+            for (let i = 0; i < repeatCount; i++)
+            {
                 outputText += inputText + "+\n";
             }
             return outputText;
@@ -42,15 +49,18 @@
         //
         // Event handlers
         //
-        const onConvertTextFile = () => {
+        const onConvertTextFile = () =>
+        {
             var inputFileInfo = getFileInfo("inputFile");
-            if (inputFileInfo == null) {
+            if (inputFileInfo == null)
+            {
                 console.log("Input file not found!");
                 return;
             }
 
             var reader = new FileReader();
-            reader.onload = (event) => {
+            reader.onload = (event) =>
+            {
                 const textContent = event.target.result;
                 console.log(`Input file contents: \n${textContent}`);
 
@@ -59,7 +69,8 @@
                 const resultFileName = "resultFile.txt";
                 writeTextFileAndDownload(resultFileName, resultTextContent);
             };
-            reader.onerror = (event) => {
+            reader.onerror = (event) =>
+            {
                 console.error(`File could not be read! Error code ${event.target.error.code}`);
             };
             reader.readAsText(inputFileInfo);
@@ -68,34 +79,42 @@
         //
         //
         //
-        const readUploadedFileAsText = (inputFile) => {
+        const readUploadedFileAsText = (inputFile) =>
+        {
             const fileReader = new FileReader();
 
-            return new Promise((resolve, reject) => {
-                fileReader.onerror = () => {
+            return new Promise((resolve, reject) =>
+            {
+                fileReader.onerror = () =>
+                {
                     fileReader.abort();
                     reject(new DOMException("Problem parsing input file."));
                 };
 
-                fileReader.onload = () => {
+                fileReader.onload = () =>
+                {
                     resolve(fileReader.result);
                 };
                 fileReader.readAsText(inputFile);
             });
         };
 
-        const handleUpload = async (event) => {
+        const handleUpload = async (event) =>
+        {
             const file = event.target.files[0];
             const fileContentDiv = document.getElementById('file-content');
-            if (!file) {
+            if (!file)
+            {
                 fileContentDiv.innerHTML = "No file is selected!";
                 return;
             }
 
-            try {
+            try
+            {
                 const fileContents = await readUploadedFileAsText(file);
                 fileContentDiv.innerHTML = fileContents;
-            } catch (e) {
+            } catch (e)
+            {
                 fileContentDiv.innerHTML = e.message;
             }
         }
@@ -111,16 +130,16 @@
             <input type="file" id="inputFile" />
         </div>
     </section>
-<section>
-    <div>
-        <button onclick="onConvertTextFile()">Convert and save</button>
-    </div>
-</section>
-<section>
-    <input id="file-upload" type="file" accept="text/plain" onchange="handleUpload(event)"/>
-    <div id="file-content">
-        Nothing uploaded yet
-    </div>
-</section>
+    <section>
+        <div>
+            <button onclick="onConvertTextFile()">Convert and save</button>
+        </div>
+    </section>
+    <section>
+        <input id="file-upload" type="file" accept="text/plain" onchange="handleUpload(event)" />
+        <div id="file-content">
+            Nothing uploaded yet
+        </div>
+    </section>
 </body>
 </html>
