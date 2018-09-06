@@ -120,6 +120,8 @@
         }
 
         //document.getElementById('file-upload').addEventListener("change", handleUpload);
+
+
     </script>
 </head>
 
@@ -131,15 +133,79 @@
         </div>
     </section>
     <section>
+        <br />
         <div>
             <button onclick="onConvertTextFile()">Convert and save</button>
         </div>
     </section>
-    <section>
-        <input id="file-upload" type="file" accept="text/plain" onchange="handleUpload(event)" />
-        <div id="file-content">
-            Nothing uploaded yet
-        </div>
-    </section>
+<section>
+    <br/>
+    <input id="file-upload" type="file" accept="text/plain" onchange="handleUpload(event)"/>
+    <div id="file-content">
+        Nothing uploaded yet
+    </div>
+</section>
+<section>
+    <div>
+        <br/>
+        <input type="file" name="file" id="fileBig"/>
+        <br>
+        <div id="progress"></div>
+    </div>
+</section>
+
+<script>
+    document.getElementById("fileBig")
+        .addEventListener("change", () =>
+        {
+            const file = document.getElementById("fileBig").files[0];
+            const progress = document.getElementById("progress");
+
+            if (file)
+            {
+                const reader = new FileReader();
+                const fileSize = file.size;
+                const sliceSize = Math.pow(2, 13);
+                const chunks = [];
+
+                let offset = 0;
+                let totalSIze = 0;
+
+                reader.onloadend = (e)=>
+                {
+                    if (e.target.readyState === FileReader.DONE)
+                    {
+                        const chunk = e.target.result;
+                        chunks.push(chunk);
+
+                        const chunkSize = chunk.length;
+                        totalSIze += chunkSize;
+
+                        progress.innerHTML = `chunks: ${chunks.length}; chunkSize: ${chunkSize} // ${totalSIze} bytes of total ${fileSize} bytes...`;
+
+                        if (offset < fileSize)
+                        {
+                            //offset += chunkSize;
+                            offset += sliceSize;
+                            const blob = file.slice(offset, offset + sliceSize);
+
+                            reader.readAsText(blob);
+                        } else
+                        {
+                            //progress.innerHTML = "processing the content...";
+
+                            console.log("content is ready!");
+
+                            //const content = chunks.join("");
+                            //console.log(content);
+                        };
+                    }
+                };
+
+                const blob = file.slice(offset, offset + sliceSize);
+                reader.readAsText(blob);
+            }
+        });
+</script>
 </body>
 </html>
