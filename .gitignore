@@ -29,3 +29,7 @@ MyHomePage/bin/Debug/netstandard2.0/Mono.WebAssembly.Interop.dll
 MyHomePage/bin/Debug/netstandard2.0/MyHomePage.blazor.config
 MyHomePage/bin/Debug/netstandard2.0/MyHomePage.dll
 MyHomePage/bin/Debug/netstandard2.0/MyHomePage.pdb
+/.vs/MyHomePage/v15/Server/sqlite3
+*.cs
+/MyHomePage/obj/Debug/netstandard2.0
+/MyHomePage/obj
