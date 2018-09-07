@@ -30,8 +30,16 @@
 
     async void ShowMessage()
     {
-        await WebFileUtil.ShowPrompt(message);
+        //await WebFileUtil.ShowPrompt(message);
         //textContent = message;
+
+        var str = "Test string";
+        var count = 1000*100;
+        var strs = await WebFileUtil.GetStringArray(str, count);
+        foreach (var s in strs)
+        {
+            Console.WriteLine(s);
+        }
     }
 
     ElementRef inputElemRef;
@@ -39,8 +47,15 @@
 
     async void ReadTextFromInputFile()
     {
-        textContent = await WebFileUtil.ReadUploadedFileAsText(inputElemRef);
-        Console.WriteLine($"textContent: {textContent}");
+        //textContent = await WebFileUtil.ReadUploadedFileAsText(inputElemRef);
+
+        var fileContents = await WebFileUtil.ReadLargeTextFile(inputElemRef);
+        foreach (var s in fileContents.Take(100))
+        {
+            Console.WriteLine(s);
+        }
+
+        //Console.WriteLine($"textContent: {textContent}");
 
         isDownloadButtonDisabled = false;
 

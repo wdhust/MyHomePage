@@ -3,29 +3,26 @@
 <head>
     <meta charset="utf-8">
     <title>Read/Write file test</title>
+    <script src="lib/jquery/jquery.js"></script>
+
     <script>
         //
         // Functions
         //
-        const getFileInfo = (inputFileElemId) =>
-        {
+        const getFileInfo = (inputFileElemId) => {
             const files = document.getElementById(inputFileElemId).files;
-            if (files.length <= 0)
-            {
+            if (files.length <= 0) {
                 return null;
             }
             return files[0];
         }
 
-        const writeTextFileAndDownload = (fileName, textContent) =>
-        {
+        const writeTextFileAndDownload = (fileName, textContent) => {
             const blob = new Blob([textContent], { type: 'text/csv' });
-            if (window.navigator.msSaveOrOpenBlob)
-            {
+            if (window.navigator.msSaveOrOpenBlob) {
                 window.navigator.msSaveBlob(blob, fileName);
             }
-            else
-            {
+            else {
                 const elem = document.createElement('a');
                 elem.href = window.URL.createObjectURL(blob);
                 elem.download = fileName;
@@ -35,12 +32,10 @@
             }
         }
 
-        const convertTextContent = (inputText) =>
-        {
+        const convertTextContent = (inputText) => {
             let outputText = "";
             const repeatCount = 1000 * 1000 * 1;
-            for (let i = 0; i < repeatCount; i++)
-            {
+            for (let i = 0; i < repeatCount; i++) {
                 outputText += inputText + "+\n";
             }
             return outputText;
@@ -49,18 +44,15 @@
         //
         // Event handlers
         //
-        const onConvertTextFile = () =>
-        {
+        const onConvertTextFile = () => {
             var inputFileInfo = getFileInfo("inputFile");
-            if (inputFileInfo == null)
-            {
+            if (inputFileInfo == null) {
                 console.log("Input file not found!");
                 return;
             }
 
             var reader = new FileReader();
-            reader.onload = (event) =>
-            {
+            reader.onload = (event) => {
                 const textContent = event.target.result;
                 console.log(`Input file contents: \n${textContent}`);
 
@@ -69,8 +61,7 @@
                 const resultFileName = "resultFile.txt";
                 writeTextFileAndDownload(resultFileName, resultTextContent);
             };
-            reader.onerror = (event) =>
-            {
+            reader.onerror = (event) => {
                 console.error(`File could not be read! Error code ${event.target.error.code}`);
             };
             reader.readAsText(inputFileInfo);
@@ -79,42 +70,34 @@
         //
         //
         //
-        const readUploadedFileAsText = (inputFile) =>
-        {
+        const readUploadedFileAsText = (inputFile) => {
             const fileReader = new FileReader();
 
-            return new Promise((resolve, reject) =>
-            {
-                fileReader.onerror = () =>
-                {
+            return new Promise((resolve, reject) => {
+                fileReader.onerror = () => {
                     fileReader.abort();
                     reject(new DOMException("Problem parsing input file."));
                 };
 
-                fileReader.onload = () =>
-                {
+                fileReader.onload = () => {
                     resolve(fileReader.result);
                 };
                 fileReader.readAsText(inputFile);
             });
         };
 
-        const handleUpload = async (event) =>
-        {
+        const handleUpload = async (event) => {
             const file = event.target.files[0];
             const fileContentDiv = document.getElementById('file-content');
-            if (!file)
-            {
+            if (!file) {
                 fileContentDiv.innerHTML = "No file is selected!";
                 return;
             }
 
-            try
-            {
+            try {
                 const fileContents = await readUploadedFileAsText(file);
                 fileContentDiv.innerHTML = fileContents;
-            } catch (e)
-            {
+            } catch (e) {
                 fileContentDiv.innerHTML = e.message;
             }
         }
@@ -154,36 +137,37 @@
         </div>
     </section>
 
+    <section>
+        <div>
+            <p><input id="uploadInput" type="file" multiple> selected files: <span id="fileCount">0</span>; total size: <span id="totalFileSize">0</span></p>
+        </div>
+    </section>
+
     <script>
         document.getElementById("fileBig")
-            .addEventListener("change", () =>
-            {
+            .addEventListener("change", () => {
                 const file = document.getElementById("fileBig").files[0];
                 const progress = document.getElementById("progress");
 
-                if (!file)
-                {
+                if (!file) {
                     return;
                 }
 
                 const textType = /text.*/;
-                if (!file.type.match(textType)) 
-                {
+                if (!file.type.match(textType)) {
                     return;
                 }
 
                 const reader = new FileReader();
                 const fileSize = file.size;
-                const sliceSize = 1024*4;
+                const sliceSize = 1024 * 4;
                 const chunks = [];
 
                 let offset = 0;
                 let totalSize = 0;
 
-                reader.onloadend = (e) =>
-                {
-                    if (e.target.readyState === FileReader.DONE)
-                    {
+                reader.onloadend = (e) => {
+                    if (e.target.readyState === FileReader.DONE) {
                         const chunk = e.target.result;
                         chunks.push(chunk);
 
@@ -192,15 +176,13 @@
 
                         progress.innerHTML = `chunks: ${chunks.length}; chunkSize: ${chunkLength} // ${totalSize} bytes of total ${fileSize} bytes...`;
 
-                        if (offset < fileSize)
-                        {
+                        if (offset < fileSize) {
                             //offset += chunkLength;
                             offset += sliceSize;
                             const blob = file.slice(offset, offset + sliceSize);
 
                             reader.readAsText(blob);
-                        } else
-                        {
+                        } else {
                             console.log("content is ready!");
 
                             const content = chunks.join("");
@@ -219,6 +201,20 @@
                 const blob = file.slice(offset, offset + sliceSize);
                 reader.readAsText(blob);
             });
+
+        $("#uploadInput").change(() => {
+            //const files = $("#uploadInput").files;
+            const files = document.getElementById("uploadInput").files;
+            const fileCount = files.length;
+            let totalFileSize = 0;
+            for (let i = 0; i < fileCount; i++) {
+                totalFileSize += files[i].size;
+            }
+            //$("#fileCount").html = fileCount;
+            //$("#totalFileSize").html = totalFileSize;
+            document.getElementById("fileCount").innerHTML = fileCount;
+            document.getElementById("totalFileSize").innerHTML = totalFileSize;
+        });
     </script>
 </body>
 </html>

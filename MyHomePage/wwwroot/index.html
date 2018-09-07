@@ -11,7 +11,22 @@
 <body>
     <app>Loading...</app>
 
-<script src="_framework/blazor.webassembly.js"></script>
-<script src="script/webFileUtil.js"></script>
+    <!--<div>
+        <button id="testBtn">Click me!</button>
+        <div id="testDiv"></div>
+    </div>-->
+
+    <script src="_framework/blazor.webassembly.js"></script>
+    <script src="lib/jquery/jquery.js"></script>
+    <script src="script/webFileUtil.js"></script>
+
+    <!--<script>
+        $("#testBtn").on("click",
+            () =>
+            {
+                $("#testDiv").html = "Button clicked!";
+                console.log("Button clicked!");
+            });
+    </script>-->
 </body>
 </html>

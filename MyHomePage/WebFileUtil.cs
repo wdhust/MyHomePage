@@ -23,5 +23,15 @@ namespace MyHomePage
 		{
 			return JSRuntime.Current.InvokeAsync<object>("webFileUtil.writeTextFileAndDownload", fileName, textContent);
 		}
+
+		public static Task<string[]> GetStringArray(string str, int count)
+		{
+			return JSRuntime.Current.InvokeAsync<string[]>("webFileUtil.getStringArray", str, count);
+		}
+
+		public static Task<string[]> ReadLargeTextFile(ElementRef inputElemRef, int sliceSize = 8192)
+		{
+			return JSRuntime.Current.InvokeAsync<string[]>("webFileUtil.readLargeTextFile", inputElemRef, sliceSize);
+		}
 	}
 }
