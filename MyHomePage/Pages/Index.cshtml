@@ -6,9 +6,15 @@
 
 <div>
     <p>Jump to page: <NavLink href="/counter">Counter</NavLink> </p>
-    <p>Or jump to page: <NavLink href="/fetchdata">FetchData</NavLink> </p>
+    <p>Or jump to page: <NavLink href="/fetchdata">FetchData</NavLink> </p><br/>
 </div>
 <div>
+    <input ref="fileElemRef" type="file" onchange="@OnSelectedFileChanged"/><br />
+    <div><p>@index / @lineCount</p></div>
+</div>
+
+
+@*<div>
     <input type="text" bind="@message"/>
     <button onclick="@ShowMessage">Show message</button>
 </div>
@@ -20,12 +26,60 @@
 </div>
 <div>
     <button disabled="@isDownloadButtonDisabled" onclick="@DownloadResultFile">Download result file</button>
-</div>
+</div>*@
 
 <SurveyPrompt Title="How is Blazor working for you?" />
 
 @functions
 {
+    ElementRef fileElemRef;
+
+    int lineCount = 1000 * 10 * 20;
+    int index = 0;
+
+    async void OnSelectedFileChanged()
+    {
+        var hasSelectedFile = WebFile.HasSelectedFile(fileElemRef);
+        Console.WriteLine($"{hasSelectedFile}");
+        if (!hasSelectedFile)
+            return;
+
+        Console.WriteLine("Reading file ...");
+        await WebFile.ReadFileToBuffer(fileElemRef);
+
+        var bufferLength = WebFile.GetBufferLength();
+        Console.WriteLine($"Buffer length: {bufferLength}");
+
+        Console.WriteLine("Getting buffer data ...");
+        var buffers = new List<string>();
+        for (var i = 0; i < bufferLength; i++)
+        {
+            var buf = await WebFile.GetBufferData(i);
+            buffers.Add(buf);
+        }
+
+        Console.WriteLine("Filling buffer ...");
+
+        WebFile.InitBuffer(buffers.Count);
+        for (var i = 0; i < buffers.Count; i++)
+        {
+            //await WebFile.FillBuffer($"Line{i + 1}: {buffers[i]}\n");
+            await WebFile.SetBufferData(i, $"Line{i + 1}: {buffers[i]}\n");
+        }
+
+        Console.WriteLine("Writing file ...");
+
+        await WebFile.WriteBufferToFile("resultFile.txt");
+        WebFile.ClearBuffer();
+
+        Console.WriteLine("Done!");
+
+        StateHasChanged();
+    }
+
+
+
+    /*
     string message = "";
 
     async void ShowMessage()
@@ -52,9 +106,9 @@
         var fileContents = await WebFileUtil.ReadLargeTextFile(inputElemRef);
         Console.WriteLine($"{fileContents.Length}");
 
-        for (var i = 0; i < fileContents.Length; i++)
+        for (var index = 0; index < fileContents.Length; index++)
         {
-            Console.WriteLine($"{i}: {fileContents[i]}");
+            Console.WriteLine($"{index}: {fileContents[index]}");
         }
 
         //foreach (var s in fileContents.Take(20))
@@ -76,5 +130,6 @@
         await WebFileUtil.WriteTextFileAndDownload("resultFile.txt",
             $"Converted text content:{Environment.NewLine}{textContent}");
     }
+    */
 }
 
