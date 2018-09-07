@@ -17,9 +17,11 @@
                 reader.abort();
                 reject(new DOMException("Problem parsing input file."));
             };
+
             reader.onload = () => {
                 resolve(reader.result);
             };
+
             reader.readAsText(inputFile);
         });
     },
@@ -48,37 +50,70 @@
     },
 
     readLargeTextFile: (inputFileElem, sliceSize) => {
-        const files = inputFileElem.files;
-        if (files.length <= 0) {
-            return [];
+        const file = inputFileElem.files[0];
+        if (!file) {
+            return "";
         }
 
-        const file = files[0];
-
         const reader = new FileReader();
-        const fileSize = file.size;
-        const chunks = [];
+        //const fileSize = file.size;
+        //const chunks = [];
 
-        let offset = 0;
-        reader.onloadend = (e) => {
-            if (e.target.readyState === FileReader.DONE) {
-                const chunk = e.target.result;
-                chunks.push(chunk);
+        //let offset = 0;
+        //reader.onloadend = (e) => {
+        //    if (e.target.readyState === FileReader.DONE) {
+        //        const chunk = e.target.result;
+        //        chunks.push(chunk);
 
-                if (offset < fileSize) {
-                    offset += sliceSize;
-                    const blob = file.slice(offset, offset + sliceSize);
-                    reader.readAsText(blob);
-                } else {
-                    console.log("Read large file complete !");
-                };
-            }
-        };
+        //        if (offset < fileSize) {
+        //            offset += sliceSize;
+        //            const blob = file.slice(offset, offset + sliceSize);
+        //            reader.readAsText(blob);
+        //        } else {
+        //            console.log("Read large file complete !");
+        //        };
+        //    }
+        //};
 
-        const blob = file.slice(offset, offset + sliceSize);
-        reader.readAsText(blob);
+        //const blob = file.slice(offset, offset + sliceSize);
+        //reader.readAsText(blob);
 
-        return chunks;
+        return new Promise((resolve, reject) => {
+            reader.onerror = () => {
+                reader.abort();
+                reject(new DOMException("Failed to parse input file."));
+            };
+
+            //
+            const fileSize = file.size;
+            const chunkList = [];
+
+            let offset = 0;
+            reader.onloadend = (e) => {
+                if (e.target.readyState === FileReader.DONE) {
+                    const chunk = e.target.result;
+                    chunkList.push(chunk);
+
+                    if (offset < fileSize) {
+                        offset += sliceSize;
+                        const blob = file.slice(offset, offset + sliceSize);
+                        reader.readAsText(blob);
+                    } else {
+                        console.log("Read large file complete !");
+                        resolve(chunkList);
+                    };
+                }
+            };
+
+            const blob = file.slice(offset, offset + sliceSize);
+            reader.readAsText(blob);
+
+            //reader.onload = () => {
+            //    resolve(reader.result);
+            //};
+
+            //reader.readAsText(inputFile);
+        });
     }
 }
 

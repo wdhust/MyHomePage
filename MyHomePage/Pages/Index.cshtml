@@ -50,10 +50,17 @@
         //textContent = await WebFileUtil.ReadUploadedFileAsText(inputElemRef);
 
         var fileContents = await WebFileUtil.ReadLargeTextFile(inputElemRef);
-        foreach (var s in fileContents.Take(100))
+        Console.WriteLine($"{fileContents.Length}");
+
+        for (var i = 0; i < fileContents.Length; i++)
         {
-            Console.WriteLine(s);
+            Console.WriteLine($"{i}: {fileContents[i]}");
         }
+
+        //foreach (var s in fileContents.Take(20))
+        //{
+        //    Console.WriteLine(s);
+        //}
 
         //Console.WriteLine($"textContent: {textContent}");
 
