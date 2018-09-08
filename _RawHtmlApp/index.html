@@ -160,7 +160,32 @@
         <div id="divResult"></div>
     </div>
 </div>
-    
-<script type="module" src="D:/Code/GitHub/MyHomePage/_RawHtmlApp/script/app.js"></script>
+ 
+<script>var exports = {};</script>
+<script src="D:/Code/GitHub/MyHomePage/_RawHtmlApp/script/myTsLib.js"></script>
+<!--<script type="module" src="D:/Code/GitHub/MyHomePage/_RawHtmlApp/script/app.js"></script>-->
+<script>
+    function g() {
+        const x = Number($("#inputX").prop("value"));
+        const y = Number($("#inputY").prop("value"));
+        console.log(`x = ${x}`);
+        console.log(`y = ${y}`);
+
+        const z = addNumber(x + y);
+        //const z = x + y;
+        console.log(`result = ${z}`);
+
+        $("#divResult").html(z);
+    }
+
+    g();
+
+    const a = 11;
+    const b = 22;
+    const c = addNumber(a + b);
+    console.log(`result = ${c}`);
+
+    console.log("app.js Done!");
+</script>
 </body>
 </html>
