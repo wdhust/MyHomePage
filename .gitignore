@@ -2,3 +2,5 @@
 /.vs/
 /MyHomePage/obj/
 /MyHomePage/bin/
+/StaticWebApp/obj
+/StaticWebApp/bin/Debug/netcoreapp2.1
