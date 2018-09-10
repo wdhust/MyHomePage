@@ -1,77 +1,80 @@
 ﻿/// <reference path="../../node_modules/@types/jquery/index.d.ts" />
 
 import { Person } from "./person";
+import { WebFileReader, WebFileWriter } from "./webFileUtil";
 
+//
+// Global variable
+//
 let clickCount = 0;
 
+//
+// Global function
+//
 function startup() {
     $("#buttonTest").click(() => {
         clickCount++;
         $("#h2Result").html(`App start up. You have clicked ${clickCount} times.`);
 
-        const person = new Person("Jack");
+        const person = new Person("Jack");      // class import from external typescript module
         var greeting = person.sayHello(clickCount);
         $("#h3Greeting").html(greeting);
     });
 }
 
-$("#fileElem").change(() => {
-    const file = $("#fileElem").prop("files")[0];
+//
+// Initial elements
+//
+$("#inputHiddenFileElem").change(() => {
+    const file = $("#inputHiddenFileElem").prop("files")[0];
     const result = (!file) ? "No file selected." : file.name;
-    $("#selectedFileName").html(result);
+    $("#divSelectedFileName").html(result);
 });
-$("#fileSelect").click(() => {
-    $("#fileElem").click();
+$("#btnFileSelect").click(() => {
+    $("#inputHiddenFileElem").click();
 });
 
-
-const updateProgress = (progress) => {
-    $("#progressBar").attr("style", `width: ${progress}%`)
-        .attr("aria-valuenow", progress);
-    $("#divProgressNumber").html(`${progress}%`);
-}
-
-let FileData:string[] = [];
+//
+// Read file
+//
+let fileData:string[] = [];     // global string array for data exchange
 
 $("#btnReadFile").click(() => {
-    const file = $("#fileElem").prop("files")[0];
+    const file = $("#inputHiddenFileElem").prop("files")[0];
     if (!file)
         return;
 
-    const reader = new FileReader();
-    const fileSize = file.size;
-    const sliceSize = 4096;
-    const chunks:string[] = [];
+    const reader = new WebFileReader(file);
+    reader.onProgressChanged = (progress: number) => {
+        $("#progressBar").attr("style", `width: ${progress}%`).attr("aria-valuenow", progress);
+        $("#divProgressNumber").html(`${progress}%`);
+    };
+    reader.onCompleted = (_fileData) => {
+        fileData = _fileData;
+    };
+    reader.startReading();
+});
 
-    let progress = "0";
-    let offset = 0;
-    reader.onloadend = (e: ProgressEvent & { target: { readyState: number } } & { target: { result: string } }) => {
-        if (e.target.readyState === FileReader.DONE) {
-            const chunk = e.target.result;
-            chunks.push(chunk);
+//
+// Write file
+//
+$("#btnWriteFile").click(() => {
+    if (fileData.length <= 0)
+        return;
 
-            progress = ((offset / fileSize) * 100).toFixed(0);
-
-            if (offset < fileSize) {
-                offset += sliceSize;
-                const blob = file.slice(offset, offset + sliceSize);
-                reader.readAsText(blob);
-            } else {
-                progress = "100";
-
-                console.log(`Read file complete ! chunk length: ${chunks.length}`);
-                //console.log(chunks[0]);
-                FileData = chunks;
-            };
-
-            updateProgress(progress);
-        }
+    const updateProgress2 = (progress) => {
+        $("#progressBar2").attr("style", `width: ${progress}%`)
+            .attr("aria-valuenow", progress);
+        $("#divProgressNumber2").html(`${progress}%`);
     };
 
-    updateProgress(progress);
+    const textContent = fileData.join("");
+    updateProgress2("50");
 
-    const blob = file.slice(offset, offset + sliceSize);
-    reader.readAsText(blob);
+    const fileName = "resultFile.txt";
+    WebFileWriter.writeFile(fileName, textContent);
+
+    updateProgress2("100");
 });
 
 export {startup};

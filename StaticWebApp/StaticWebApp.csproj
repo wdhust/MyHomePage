@@ -8,6 +8,7 @@
   <ItemGroup>
     <Content Remove="wwwroot\script\main.ts" />
     <Content Remove="wwwroot\script\person.ts" />
+    <Content Remove="wwwroot\script\webFileUtil.ts" />
   </ItemGroup>
 
   <ItemGroup>
@@ -17,6 +18,7 @@
   <ItemGroup>
     <TypeScriptCompile Include="wwwroot\script\main.ts" />
     <TypeScriptCompile Include="wwwroot\script\person.ts" />
+    <TypeScriptCompile Include="wwwroot\script\webFileUtil.ts" />
   </ItemGroup>
 
 </Project>
